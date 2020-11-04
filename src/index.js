@@ -1,123 +1,85 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-
-import Footer from './components/footer'
-import NewTaskForm from './components/newTaskForm'
-import TaskList from './components/taskList'
+import Header from './components/Header'
+import TaskList from './components/TaskList'
+import Footer from './components/Footer'
 
 class App extends React.Component {
-  tasksDataId = 1
-  
+    taskId = 1
 
-  state = {
-    tasksData : [ ],
-    footerData : [
-      {text: 'All', id : 1},
-      {text: 'Active', id : 2},
-      {text: 'Completed', id : 3},
-    ],
-    filter : 'all'
-  }
-
-  createNewTasksDataElement = (taskTxt) => {
-    return {
-      taskTxt : taskTxt, dateCreated : new Date(), completed : false, id : this.tasksDataId++
+    state = {
+      tasksData : [ ],
+      filter : 'All'
     }
-  }
 
-  deleteAllCompletedTask = () => {
-    this.setState(state => {
-      const newState = state.tasksData.filter(item => item.completed === false)
-      return {
-        tasksData : newState
-      }
-    })
-  }
+    createNewTasksDataElement = (taskText) => ({taskText : taskText, date : new Date(), completed : false, id : this.taskId++ })
 
-  editTask = (newTaskTxt, id) => {
-    const index = this.state.tasksData.findIndex(item => id === item.id)
-    this.setState(state => {
-      const newTask = { ...state.tasksData[index], taskTxt : newTaskTxt }
-      return {
-        tasksData : [...state.tasksData.slice(0, index), newTask, ...state.tasksData.slice(index + 1)]
-      }
-    })
-  }
+    createNewTask = (taskText) => {
+      this.setState(({tasksData}) => ({ tasksData : [...tasksData, this.createNewTasksDataElement(taskText)] }))
+    }
 
-  onActiveFilter = () => {
-    this.setState({ filter : 'active'})
-  }
-
-  onCompletedFilter = () => {
-    this.setState({ filter : 'completed'})
-  }
-
-  notFilter = () => {
-    this.setState({ filter : 'all' })
-  }
-
-  setTaskCompleted = (id) => {
-    this.setState(state => {
-      const index = state.tasksData.findIndex(item => item.id === id)
-      const newElement = {...state.tasksData[index], completed : !state.tasksData[index].completed}
-      return {
-        tasksData : [...state.tasksData.slice(0, index), newElement, ...state.tasksData.slice(index + 1)]
-      }
-    })
-  }
-
-  deleteTask = (id) => {
-    this.setState(state => {
-      const index = state.tasksData.findIndex(item => item.id === id)
-      return {
-        tasksData : [...state.tasksData.slice(0, index), ...state.tasksData.slice(index + 1)]
-      }
-    })
-  }
-  
-  createNewTask = (taskTxt) => {
-      this.setState(state => {
-        const newTask = this.createNewTasksDataElement(taskTxt)
-        this.tasksDataId = ++this.tasksDataId
-
+    setTaskCompleted = (taskId) => {
+      this.setState(({ tasksData }) => {
+        const index = tasksData.findIndex(item => taskId === item.id)
+        const completedTask = {...tasksData[index], completed : !tasksData[index].completed}
         return {
-          tasksData : [ ...state.tasksData, newTask]
+          tasksData : [...tasksData.slice(0, index), completedTask, ...tasksData.slice(index + 1)]
         }
       })
-  }
+    }
 
-  render() {
-    const notCompletedCount = this.state.tasksData.filter(item => item.completed === false).length
-    console.log(notCompletedCount)
-    return (
-      <section className = 'todoapp'>
-        <header className = 'header'>
-          <h1>todos</h1>
-          <NewTaskForm
-            createNewTask = { this.createNewTask }  
+    editTask = (taskId, newTaskText) => {
+      this.setState(({ tasksData }) => {
+        const index = tasksData.findIndex(item => taskId === item.id)
+        const newTask = {...tasksData[index], taskText : newTaskText}
+        return {
+          tasksData : [...tasksData.slice(0, index), newTask, ...tasksData.slice(index + 1)]
+        }
+      })
+    }
+
+    deleteTask = (taskId) => {
+      this.setState(({tasksData}) => {
+        const index = tasksData.findIndex(item => taskId === item.id)
+        return {
+          tasksData : [...tasksData.slice(0, index), ...tasksData.slice(index + 1)]
+        }
+      })
+    }
+
+    setFilter = (filter) => {
+      this.setState({filter : filter})
+    }
+
+    clearCompletedTasks = () => {
+      this.setState(({tasksData}) => {
+        return {
+          tasksData : tasksData.filter(item => item.completed === false)
+        }
+      })
+    }
+
+
+    render() {
+      return (
+        <>
+          <Header createNewTask = {this.createNewTask}/>
+          <TaskList 
+              data = {this.state.tasksData}
+              setTaskCompleted = {this.setTaskCompleted}
+              deleteTask = {this.deleteTask}
+              editTask = {this.editTask}
+              filter = {this.state.filter}
           />
-        </header>
-        <section className = 'main'>
-          <TaskList tasksData = { this.state.tasksData }
-                    filter = { this.state.filter }
-                    deleteTask = { this.deleteTask }
-                    setTaskCompleted = { this.setTaskCompleted }
-                    editTask = { this.editTask }
-                    />
-        </section>
-  
-        <Footer footerData={this.state.footerData}
-                filter = {this.state.filter}
-                onActiveFilter = {this.onActiveFilter}
-                onCompletedFilter = {this.onCompletedFilter}
-                notFilter = {this.notFilter}
-                deleteAllCompletedTask = {this.deleteAllCompletedTask}
-                notCompletedCount = {notCompletedCount}
-        />
-      </section>
-    )
-  }
+          <Footer 
+              completedCount = {this.state.tasksData.filter(item => item.completed === false).length}
+              clearCompletedTasks = {this.clearCompletedTasks}
+              setFilter = {this.setFilter}
+          />
+        </>
+      )
+    }
 }
 
 

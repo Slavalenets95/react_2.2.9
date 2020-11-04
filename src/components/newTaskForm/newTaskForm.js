@@ -1,37 +1,29 @@
 import React from 'react'
-
-import './newTaskForm.css'
+import './NewTaskForm.css'
 
 export default class NewTaskForm extends React.Component {
 
     state = {
-        newTaskTxt : ''
+        value : ''
     }
 
-    onInputChange = (event) => {
-        this.setState( {
-            newTaskTxt : event.target.value
-        })
-    }
-
-    onEnterDown = (event) => {
-        if(event.key === 'Enter') {
-            event.target.value = ''
-            this.props.createNewTask(this.state.newTaskTxt)
+    handleKeyPress = (e) => {
+        if(e.key === 'Enter' && this.state.value !== '') {
+            this.props.createNewTask(this.state.value)
+            this.setState({value : ''})
         }
     }
     
     render() {
+
         return (
-            <input
-                className = 'new-todo'
-                placeholder = "What needs to be done?"
-                autoFocus
-                onChange = { this.onInputChange }
-                onKeyDown = { this.onEnterDown }
-            />
+            <input className = "new-todo" 
+                   value = {this.state.value}
+                   placeholder = 'What needs to be done?'
+                   autoFocus 
+                   onChange = {(e) => this.setState({value : e.target.value})}
+                   onKeyPress = {this.handleKeyPress}
+                   />
         )
     }
 }
-
-

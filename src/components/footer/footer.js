@@ -1,58 +1,48 @@
 import React from 'react'
+import './Footer.css'
 import PropTypes from 'prop-types'
-import './footer.css'
-import TaskFilter from '../tasksFilter/taskFilter'
 
-function Footer(props) {
-
-    Footer.propTypes = {
-        footerData : PropTypes.arrayOf(PropTypes.object),
-        onActiveFilter : PropTypes.func,
-        onCompletedFilter : PropTypes.func,
-        notFilter : PropTypes.func,
-        deleteAllCompletedTask : PropTypes.func
+export default class Footer extends React.Component {
+    
+    static defaultProps = {
+        clearCompletedTasks : () => {}
     }
 
-    const {footerData, filter, notCompletedCount} = props
-    const {onActiveFilter, onCompletedFilter, notFilter, deleteAllCompletedTask} = props         //func
+    static propTypes = {
+        completedCount : PropTypes.number,
+        clearCompletedTasks : PropTypes.func
+    }
 
-    const filterLiElements = footerData.map(item => {
-        const {id, ...data} = item
+    state = {
+        selected : 'All'
+    }
+ 
+    handleClick = (e) => {
+        this.props.setFilter(e.target.textContent)
+        this.setState({selected : e.target.textContent})
+    }
+
+    render() {
+        const {completedCount, clearCompletedTasks} = this.props
         return (
-            <li key={id}>
-                <TaskFilter
-                    {...data}
-                    filter={filter}
-                />
-            </li>
+            <footer className = "footer">
+                <span className = "todo-count">{completedCount} items left</span>
+                <ul className = "filters"
+                    onClick = {this.handleClick}
+                >
+                    <li>
+                        <button className = {this.state.selected === 'All' ? 'selected' : null}>All</button>
+                    </li>
+                    <li>
+                        <button className = {this.state.selected === 'Active' ? 'selected' : null}>Active</button>
+                    </li>
+                    <li>
+                        <button className = {this.state.selected === 'Completed' ? 'selected' : null}>Completed</button>
+                    </li>
+                </ul>
+                <button className = "clear-completed" onClick = {clearCompletedTasks}>Clear completed</button>
+          </footer>
         )
-    })
-
-    const filterEvent = (event) => {
-        const filter = event.target.textContent.toLowerCase()
-
-        if (filter === 'active') {
-            onActiveFilter()
-        } else if (filter === 'completed') {
-            onCompletedFilter()
-        } else {
-            notFilter()
-        }
     }
-
-    return (
-        <footer className='footer'>
-            <span className='todo-count'>{notCompletedCount} items left</span>
-            <ul className='filters'
-                onClick={filterEvent}>
-                {filterLiElements}
-            </ul>
-            <button className='clear-completed' onClick={deleteAllCompletedTask} >Clear completed</button>
-        </footer>
-    )
 }
-
-export default Footer
-
-
 

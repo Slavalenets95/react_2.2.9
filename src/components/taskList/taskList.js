@@ -1,29 +1,28 @@
 import React from 'react'
+import './TaskList.css'
 import PropTypes from 'prop-types'
-import Task from '../task/task'
-import './taskList.css'
+import Task from '../Task'
 
-function TaskList(props) {
-    const { tasksData, filter } = props
-    const { deleteTask, setTaskCompleted, editTask } = props //func
-    
+function TaskList({data, filter, setTaskCompleted, deleteTask, editTask}) {
+
     TaskList.defaultProps = {
-        tasksData : [],
+        data : [],
         deleteTask : () => {},
         setTaskCompleted : () => {},
         editTask : () => {}
     }
 
     TaskList.propTypes = {
-        tasksData : PropTypes.arrayOf(PropTypes.object)
+        data : PropTypes.arrayOf(PropTypes.object),
+        filter : PropTypes.string
     }
 
-    function getFilteredElements(data, filter) {
+    function getTasks(data, filter) {
         let filteredElements = data.filter(item => {
             switch (filter) {
-                case 'completed':
+                case 'Completed':
                     return item.completed === true
-                case 'active':
+                case 'Active':
                     return item.completed === false
                 default:
                     return true
@@ -36,9 +35,9 @@ function TaskList(props) {
             return (
                 <Task key = {id} 
                       {...data} 
+                      setTaskCompleted = {() => setTaskCompleted(id)}
                       deleteTask = {() => deleteTask(id)}
-                      setTaskCompleted={() => setTaskCompleted(id)}
-                      editTask = {(e) => editTask(e.target.value, id)}
+                      editTask = {(newTaskText) => editTask(id, newTaskText)}
                 />
             )
         })
@@ -46,16 +45,16 @@ function TaskList(props) {
         return filteredElements
     }
 
-    const taskListLiElements = getFilteredElements(tasksData, filter)
+    const tasks = getTasks(data, filter)
 
     return (
-        <ul className='todo-list'>
-            { taskListLiElements}
-        </ul>
-    ) 
-
+        <section className = "main">
+            <ul className = "todo-list">
+                {tasks}
+            </ul>
+        </section>
+    )
 }
 
 
 export default TaskList
-
