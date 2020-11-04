@@ -1,3 +1,3 @@
-import TaskLabel from './TaskLabel'
+import TaskLabel from './TaskLabel';
 
-export default TaskLabel
+export default TaskLabel;
