@@ -3,7 +3,7 @@ import './TaskList.css';
 import PropTypes from 'prop-types';
 import Task from '../Task';
 
-function TaskList({ data, filter, setTaskCompleted, deleteTask, editTask }) {
+function TaskList({ data, filter, setTaskCompleted, deleteTask, editTask, onTimer }) {
   TaskList.defaultProps = {
     data: [],
     deleteTask: () => {},
@@ -29,15 +29,16 @@ function TaskList({ data, filter, setTaskCompleted, deleteTask, editTask }) {
     });
 
     filteredElements = filteredElements.map((item) => {
-      const { id, ...data } = item;
+      
 
       return (
         <Task
-          key={id}
-          {...data}
-          setTaskCompleted={() => setTaskCompleted(id)}
-          deleteTask={() => deleteTask(id)}
-          editTask={(newTaskText) => editTask(id, newTaskText)}
+          key={item.id}
+          {...item}
+          setTaskCompleted={() => setTaskCompleted(data.id)}
+          deleteTask={() => deleteTask(data.id)}
+          editTask={(newTaskText) => editTask(data.id, newTaskText)}
+          onTimer={onTimer}
         />
       );
     });

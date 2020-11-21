@@ -29,8 +29,7 @@ export default class Task extends React.Component {
   };
 
   render() {
-    const { taskText, date, completed, setTaskCompleted, deleteTask } = this.props;
-
+    const { taskText, date, completed, setTaskCompleted, deleteTask, onTimer, id, timer, timerOn } = this.props;
     let classNames = completed === true ? 'completed' : '';
     classNames = this.state.isEdit === true ? 'editing' : classNames;
 
@@ -50,7 +49,7 @@ export default class Task extends React.Component {
       <li className={classNames}>
         <div className="view">
           <input className="toggle" type="checkbox" onClick={setTaskCompleted} />
-          <TaskLabel taskText={taskText} date={date} />
+          <TaskLabel id={id} timer = {timer} taskText={taskText} date={date} onTimer={onTimer} timerOn = {timerOn} />
           <button className="icon icon-edit" onClick={this.onEdit}></button>
           <button className="icon icon-destroy" onClick={deleteTask}></button>
         </div>

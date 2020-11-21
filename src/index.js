@@ -12,18 +12,31 @@ class App extends React.Component {
     filter: 'All',
   };
 
-  createNewTasksDataElement = (taskText) => ({
+  createNewTasksDataElement = (taskText, timer) => ({
     taskText: taskText,
     date: new Date(),
+    dateCreate : Date.now(),
     completed: false,
     id: this.taskId++,
+    timer: timer,
+    timerOn: false,
   });
 
-  createNewTask = (taskText) => {
+  createNewTask = (taskText, timer) => {
     this.setState(({ tasksData }) => ({
-      tasksData: [...tasksData, this.createNewTasksDataElement(taskText)],
+      tasksData: [...tasksData, this.createNewTasksDataElement(taskText, timer)],
     }));
   };
+
+  onTimer = (taskId, interval) => {
+    this.setState(({tasksData}) => {
+      const index = tasksData.findIndex((item) => taskId === item.id)
+      const newTask = {...tasksData[index], timer: tasksData[index].timer - interval, timerOn: true,}
+      return {
+        tasksData: [...tasksData.slice(0, index), newTask, ...tasksData.slice(index + 1)],
+      }
+    })
+  }
 
   setTaskCompleted = (taskId) => {
     this.setState(({ tasksData }) => {
@@ -79,6 +92,7 @@ class App extends React.Component {
           deleteTask={this.deleteTask}
           editTask={this.editTask}
           filter={this.state.filter}
+          onTimer={this.onTimer}
         />
         <Footer
           completedCount={this.state.tasksData.filter((item) => item.completed === false).length}
@@ -91,3 +105,4 @@ class App extends React.Component {
 }
 
 ReactDOM.render(<App />, document.getElementById('main'));
+
